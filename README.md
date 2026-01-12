@@ -12,23 +12,23 @@ A web-based application for managing a cafe's operations.
 
 ##Screenshots 
 ###Home Pabe
-![Cafe Homepage Interface](screenshots/home.png)
+![Cafe Homepage Interface](screenshots/home.jpg)
 *A view of the homepage alongwith the sidebar for perticular token.*
 
 ### Order Form
-![Order Form](screenshots/Online_Ordering.png)
+![Order Form](screenshots/Online_Ordering.jpg)
 *The interface for customizing and placing an order.*
 
 ##Locaton and Timing
-![Location_and Timing](screenshots/Location_and_timining.png)
+![Location_and Timing](screenshots/Location_and_timining.jpg)
 *Interface to find the location and availabliity of the store.*
 
 ### Cotact info
-![Contact_Info](screenshots/Contact_US.png)
+![Contact_Info](screenshots/Contact_US.jpg)
 *Contact information so customer can visit.*
 
 ### Admin Panel
-![Admin_Panel](screenshots/Admin_Panel.png)
+![Admin_Panel](screenshots/Admin_Panel.jpg)
 *The interface to check the database information.*
 
 ## Technologies Used
