@@ -11,6 +11,25 @@ A web-based application for managing a cafe's operations.
 
 
 ##Screenshots 
+###Home Pabe
+![Cafe Homepage_Interface](screenshots/home.png)
+*A view of the homepage alongwith the sidebar for perticular token.*
+
+### Order Form
+![Order Form](screenshots/Online_Ordering.png)
+*The interface for customizing and placing an order.*
+
+##Locaton and Timing
+![Location_and Timing](screenshots/Location_and_timining.png)
+*Interface to find the location and availabliity of the store.*
+
+### Cotact info
+![Contact_Info](screenshots/Contact_US.png)
+*Contact information so customer can visit.*
+
+### Admin Panel
+![Admin_Panel](screenshots/Admin_Panel.png)
+*The interface to check the database information.*
 
 ## Technologies Used
 
