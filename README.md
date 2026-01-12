@@ -12,7 +12,7 @@ A web-based application for managing a cafe's operations.
 
 ##Screenshots 
 ###Home Pabe
-![Cafe Homepage_Interface](screenshots/home.png)
+![Cafe Homepage Interface](screenshots/home.png)
 *A view of the homepage alongwith the sidebar for perticular token.*
 
 ### Order Form
