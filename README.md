@@ -20,7 +20,7 @@ A web-based application for managing a cafe's operations.
 *The interface for customizing and placing an order.*
 
 ##Locaton and Timing
-![Location and Timing](screenshots/Location_and_timining.jpg)
+![Location and Timing](screenshots/Location_and_timing.jpg)
 *Interface to find the location and availabliity of the store.*
 
 ### Cotact info
