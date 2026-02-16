@@ -251,17 +251,3 @@ elif page == "Admin Panel":
         conn.close()
     else:
         st.error("Access denied")
-
-
-elif page == "Admin Panel":
-    st.title("Admin Dashboard")
-
-    conn = sqlite3.connect('cafe_database.db')
-
-    st.subheader("Orders")
-    st.dataframe(pd.read_sql_query("SELECT * FROM orders", conn))
-
-    st.subheader("Messages")
-    st.dataframe(pd.read_sql_query("SELECT * FROM messages", conn))
-
-    conn.close()
