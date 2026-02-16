@@ -4,6 +4,13 @@ import pandas as pd
 import hashlib
 from datetime import datetime
 
+# SESSION CONTROL
+if "user" not in st.session_state:
+    st.session_state.user = None
+
+if "auth_page" not in st.session_state:
+    st.session_state.auth_page = "login"
+
 
 # ================= DATABASE SETUP =================
 def init_db():
@@ -80,7 +87,7 @@ def login(username, password):
 
 
 # ================= ORDER FUNCTIONS =================
-def add_order(name, phone, item, quantity, address, username, payment_mode):
+def add_order(name, phone, item, quantity, address):
     conn = sqlite3.connect('cafe_database.db')
     c = conn.cursor()
 
@@ -115,17 +122,52 @@ if "user" not in st.session_state:
     st.session_state.user = None
 
 
-# ================= SIDEBAR NAVIGATION =================
-st.sidebar.title("Cafe App")
+# ===== LOGIN SYSTEM FIRST =====
+if not st.session_state.user:
 
-page = st.sidebar.radio(
-    "Navigation",
-    ["Login", "Signup", "Order Food", "My Orders", "Contact", "Admin Panel"]
-)
+    if st.session_state.auth_page == "login":
 
-# SESSION DEFAULT PAGE
-if "auth_page" not in st.session_state:
-    st.session_state.auth_page = "login"
+        st.title("Login to Club Cafe")
+
+        username = st.text_input("Username")
+        password = st.text_input("Password", type="password")
+
+        if st.button("Login"):
+            if login(username, password):
+                st.session_state.user = username
+                st.success("Login successful")
+                st.rerun()
+            else:
+                st.error("Invalid credentials")
+
+        st.write("New user?")
+        if st.button("Create Account"):
+            st.session_state.auth_page = "signup"
+            st.rerun()
+
+
+    elif st.session_state.auth_page == "signup":
+
+        st.title("Create Account")
+
+        username = st.text_input("Choose Username")
+        password = st.text_input("Choose Password", type="password")
+
+        if st.button("Signup"):
+            if signup(username, password):
+                st.success("Account created. Please login.")
+                st.session_state.auth_page = "login"
+                st.rerun()
+            else:
+                st.error("Username exists")
+
+        if st.button("Back to Login"):
+            st.session_state.auth_page = "login"
+            st.rerun()
+
+    st.stop()
+
+
 
 
 # ===== LOGIN PAGE =====
@@ -170,6 +212,18 @@ elif st.session_state.auth_page == "signup":
     if st.button("Back to Login"):
         st.session_state.auth_page = "login"
         st.rerun()
+
+# ================= SIDEBAR NAVIGATION =================
+st.sidebar.title("Cafe App")
+
+page = st.sidebar.radio(
+    "Navigation",
+    ["Login", "Signup", "Order Food", "My Orders", "Contact", "Admin Panel"]
+)
+
+# SESSION DEFAULT PAGE
+if "auth_page" not in st.session_state:
+    st.session_state.auth_page = "login"
 
 
 
