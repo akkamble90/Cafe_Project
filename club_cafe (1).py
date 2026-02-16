@@ -1,40 +1,104 @@
 import streamlit as st
 import sqlite3
 import pandas as pd
+import hashlib
+from datetime import datetime
 
-#user login detials for session status 
-if "user_logged_in" not in st.session_state:
-    st.session_state.user_logged_in = False
+import streamlit as st
+import sqlite3
+import pandas as pd
+import hashlib
+from datetime import datetime
 
-if "admin_logged_in" not in st.session_state:
-    st.session_state.admin_logged_in = False
 
-
-# DATABASE SETUP
+# ================= DATABASE SETUP =================
 def init_db():
     conn = sqlite3.connect('cafe_database.db')
     c = conn.cursor()
 
+    # Orders table
     c.execute('''CREATE TABLE IF NOT EXISTS orders
                  (id INTEGER PRIMARY KEY AUTOINCREMENT,
-                  name TEXT, phone TEXT, item TEXT,
-                  quantity INTEGER, address TEXT, status TEXT)''')
+                  name TEXT,
+                  phone TEXT,
+                  item TEXT,
+                  quantity INTEGER,
+                  address TEXT,
+                  status TEXT,
+                  username TEXT,
+                  payment_mode TEXT,
+                  order_time TEXT)''')
 
+    # Messages table
     c.execute('''CREATE TABLE IF NOT EXISTS messages
                  (id INTEGER PRIMARY KEY AUTOINCREMENT,
-                  name TEXT, email TEXT, message TEXT)''')
+                  name TEXT,
+                  email TEXT,
+                  message TEXT)''')
+
+    # Users table
+    c.execute('''CREATE TABLE IF NOT EXISTS users
+                 (id INTEGER PRIMARY KEY AUTOINCREMENT,
+                  username TEXT UNIQUE,
+                  password TEXT)''')
 
     conn.commit()
     conn.close()
 
 
-def add_order(name, phone, item, quantity, address):
+init_db()
+
+
+# ================= SECURITY FUNCTIONS =================
+def hash_password(password):
+    return hashlib.sha256(password.encode()).hexdigest()
+
+
+def signup(username, password):
     conn = sqlite3.connect('cafe_database.db')
     c = conn.cursor()
+
+    try:
+        c.execute(
+            "INSERT INTO users (username, password) VALUES (?, ?)",
+            (username, hash_password(password))
+        )
+        conn.commit()
+        return True
+    except:
+        return False
+    finally:
+        conn.close()
+
+
+def login(username, password):
+    conn = sqlite3.connect('cafe_database.db')
+    c = conn.cursor()
+
     c.execute(
-        "INSERT INTO orders (name, phone, item, quantity, address, status) VALUES (?, ?, ?, ?, ?, ?)",
-        (name, phone, item, quantity, address, 'Pending')
+        "SELECT * FROM users WHERE username=? AND password=?",
+        (username, hash_password(password))
     )
+
+    user = c.fetchone()
+    conn.close()
+    return user
+
+
+# ================= ORDER FUNCTIONS =================
+def add_order(name, phone, item, quantity, address, username, payment_mode):
+    conn = sqlite3.connect('cafe_database.db')
+    c = conn.cursor()
+
+    c.execute(
+        """INSERT INTO orders
+        (name, phone, item, quantity, address, status,
+         username, payment_mode, order_time)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+        (name, phone, item, quantity, address,
+         'Pending', username, payment_mode, str(datetime.now()))
+    )
+
     conn.commit()
     conn.close()
 
@@ -42,15 +106,146 @@ def add_order(name, phone, item, quantity, address):
 def add_message(name, email, message):
     conn = sqlite3.connect('cafe_database.db')
     c = conn.cursor()
+
     c.execute(
         "INSERT INTO messages (name, email, message) VALUES (?, ?, ?)",
         (name, email, message)
     )
+
     conn.commit()
     conn.close()
 
 
-init_db()
+# ================= SESSION STATE =================
+if "user" not in st.session_state:
+    st.session_state.user = None
+
+
+# ================= SIDEBAR NAVIGATION =================
+st.sidebar.title("Cafe App")
+
+page = st.sidebar.radio(
+    "Navigation",
+    ["Login", "Signup", "Order Food", "My Orders", "Contact", "Admin Panel"]
+)
+
+
+# ================= LOGIN =================
+if page == "Login":
+
+    st.title("User Login")
+
+    username = st.text_input("Username")
+    password = st.text_input("Password", type="password")
+
+    if st.button("Login"):
+        if login(username, password):
+            st.session_state.user = username
+            st.success("Login successful")
+        else:
+            st.error("Invalid credentials")
+
+
+# ================= SIGNUP =================
+elif page == "Signup":
+
+    st.title("Create Account")
+
+    username = st.text_input("New Username")
+    password = st.text_input("New Password", type="password")
+
+    if st.button("Signup"):
+        if signup(username, password):
+            st.success("Account created")
+        else:
+            st.error("Username already exists")
+
+
+# ================= ORDER FOOD =================
+elif page == "Order Food":
+
+    if not st.session_state.user:
+        st.warning("Please login first")
+    else:
+        st.title("Order Food")
+
+        name = st.text_input("Name")
+        phone = st.text_input("Phone")
+        item = st.text_input("Item")
+        quantity = st.number_input("Quantity", 1)
+        address = st.text_area("Address")
+
+        payment_mode = st.selectbox(
+            "Payment Mode",
+            ["Cash", "UPI", "Card"]
+        )
+
+        if st.button("Place Order"):
+            add_order(
+                name, phone, item, quantity,
+                address, st.session_state.user,
+                payment_mode
+            )
+            st.success("Order placed successfully")
+
+
+# ================= USER ORDER HISTORY =================
+elif page == "My Orders":
+
+    if not st.session_state.user:
+        st.warning("Please login first")
+    else:
+        conn = sqlite3.connect('cafe_database.db')
+
+        df = pd.read_sql_query(
+            f"SELECT * FROM orders WHERE username='{st.session_state.user}'",
+            conn
+        )
+
+        st.dataframe(df)
+        conn.close()
+
+
+# ================= CONTACT =================
+elif page == "Contact":
+
+    st.title("Contact Us")
+
+    name = st.text_input("Name")
+    email = st.text_input("Email")
+    message = st.text_area("Message")
+
+    if st.button("Send"):
+        add_message(name, email, message)
+        st.success("Message sent")
+
+
+# ================= ADMIN PANEL =================
+elif page == "Admin Panel":
+
+    st.title("Admin Login")
+
+    admin_user = st.text_input("Admin Username")
+    admin_pass = st.text_input("Admin Password", type="password")
+
+    if admin_user == st.secrets["admin_username"] and \
+       admin_pass == st.secrets["admin_password"]:
+
+        st.success("Admin logged in")
+
+        conn = sqlite3.connect('cafe_database.db')
+
+        st.subheader("All Orders")
+        st.dataframe(pd.read_sql_query("SELECT * FROM orders", conn))
+
+        st.subheader("Messages")
+        st.dataframe(pd.read_sql_query("SELECT * FROM messages", conn))
+
+        conn.close()
+
+    else:
+        st.info("Enter admin credentials")
+
 
 
 # PAGE CONFIG 
