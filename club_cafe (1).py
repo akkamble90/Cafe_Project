@@ -9,8 +9,6 @@ Original file is located at
 #Install Dependacies
 """
 
-!pip install streamlit pyngrok
-
 """#Website Code"""
 
 # Commented out IPython magic to ensure Python compatibility.
