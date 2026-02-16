@@ -271,7 +271,7 @@ print("✅ Ngrok authenticated using Colab Secrets")
 
 """#Run Streamlite in backgrouwnd"""
 
-!streamlit run club_cafe_app.py --server.port 8501 &
+streamlit run club_cafe_app.py --server.port 8501 &
 
 """#Get URL"""
 
