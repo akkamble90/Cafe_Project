@@ -2,8 +2,15 @@ import streamlit as st
 import sqlite3
 import pandas as pd
 
+#user login detials for session status 
+if "user_logged_in" not in st.session_state:
+    st.session_state.user_logged_in = False
 
-# ---------- DATABASE SETUP ----------
+if "admin_logged_in" not in st.session_state:
+    st.session_state.admin_logged_in = False
+
+
+# DATABASE SETUP
 def init_db():
     conn = sqlite3.connect('cafe_database.db')
     c = conn.cursor()
@@ -46,11 +53,11 @@ def add_message(name, email, message):
 init_db()
 
 
-# ---------- PAGE CONFIG ----------
+# PAGE CONFIG 
 st.set_page_config(page_title="Club Cafe", layout="wide")
 
 
-# ---------- CUSTOM CSS ----------
+# CUSTOM CSS 
 st.markdown("""
 <style>
 .main-title {
@@ -70,8 +77,8 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-# ---------- SIDEBAR ----------
-st.sidebar.title("☕ Club Cafe")
+# SIDEBAR
+st.sidebar.title(" Club Cafe")
 page = st.sidebar.radio(
     "Navigation",
     ["Home", "Menu", "Online Ordering", "Gallery",
@@ -84,9 +91,9 @@ admin_password = st.sidebar.text_input(
 )
 
 
-# ---------- HOME PAGE ----------
+# HOME PAGE 
 if page == "Home":
-    st.markdown('<p class="main-title">☕ Welcome to Club Cafe</p>', unsafe_allow_html=True)
+    st.markdown('<p class="main-title"> Welcome to Club Cafe</p>', unsafe_allow_html=True)
     st.markdown('<p class="sub-text">Delicious Cakes • Cozy Ambience • Sweet Memories</p>', unsafe_allow_html=True)
 
     col1, col2, col3 = st.columns([1, 2, 1])
@@ -102,12 +109,12 @@ if page == "Home":
     """)
 
 
-# ---------- MENU PAGE ----------
+# MENU PAGE
 elif page == "Menu":
-    st.title("🍰 Our Menu")
+    st.title(" Our Menu")
 
     # Signature Cakes
-    st.subheader("🎂 Signature Cakes")
+    st.subheader(" Signature Cakes")
     col1, col2, col3 = st.columns(3)
     with col1:
         st.image("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_5wELZrcZ1U5ThkVVNQsHkYxoZRX0RXII8Q&s", width=300)
@@ -120,7 +127,7 @@ elif page == "Menu":
         st.caption("Chocolate Truffle")
 
     # Designer Cakes
-    st.subheader("🎨 Premium Designer Cakes")
+    st.subheader(" Premium Designer Cakes")
     col1, col2, col3 = st.columns(3)
     with col1:
         st.image("https://www.indiacakes.com/media/catalog/product/cache/a4577f844569f68fd14659d95bb20f68/a/p/appetizing_ferrero_rocher_cake_1_kg.jpg", width=300)
@@ -133,7 +140,7 @@ elif page == "Menu":
         st.caption("Blueberry Cheesecake")
 
     # Cupcakes
-    st.subheader("🧁 Cupcakes")
+    st.subheader(" Cupcakes")
     col1, col2, col3 = st.columns(3)
     with col1:
         st.image("https://bonnibakery.com/wp-content/uploads/2024/03/German-Chocolate-Cupcakes_53-1-1024x1024.jpg.webp", width=300)
@@ -146,7 +153,7 @@ elif page == "Menu":
         st.caption("Red Velvet Cupcake")
 
     # Pastries
-    st.subheader("🥐 Pastries")
+    st.subheader(" Pastries")
     col1, col2, col3 = st.columns(3)
     with col1:
         st.image("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSeQU_Kopa9mOkCRMUoqkaj7O0lQN7UTfeBPw&s", width=300)
@@ -159,7 +166,7 @@ elif page == "Menu":
         st.caption("Butterscotch Pastry")
 
 
-# ---------- ONLINE ORDER ----------
+# ONLINE ORDER
 elif page == "Online Ordering":
     st.title("🛒 Online Ordering")
 
@@ -184,9 +191,9 @@ elif page == "Online Ordering":
                 st.error("Please fill all details.")
 
 
-# ---------- GALLERY ----------
+# GALLERY
 elif page == "Gallery":
-    st.title("📸 Gallery")
+    st.title(" Gallery")
     col1, col2, col3 = st.columns(3)
     with col1:
         st.image("https://images.unsplash.com/photo-1542826438-bd32f43d626f", width=300)
@@ -196,29 +203,30 @@ elif page == "Gallery":
         st.image("https://images.unsplash.com/photo-1551024601-bec78aea704b", width=300)
 
 
-# ---------- ABOUT ----------
+# ABOUT 
 elif page == "About Us":
-    st.title("ℹ️ About Club Cafe")
+    st.title(" About Club Cafe")
+    st.image("https://mybites.io/wp-content/uploads/2021/08/Happy-restaurant-team-serving-delicious-dishes.jpg", width=600)
     st.write("""
     At Club Cafe, we bake fresh cakes and desserts daily using premium ingredients.
     We believe in quality, tradition, and making every celebration sweeter.
     """)
 
 
-# ---------- LOCATION ----------
+# LOCATION
 elif page == "Location & Timings":
     st.title("📍 Location")
     st.map(pd.DataFrame({"lat": [18.5204], "lon": [73.8567]}))
     st.write("Open daily: 10 AM – 10 PM")
 
 
-# ---------- REVIEWS ----------
+# REVIEWS
 elif page == "Reviews":
     st.title("Customer Reviews")
     st.info("⭐⭐⭐⭐⭐ Loved the cakes and ambience!")
 
 
-# ---------- CONTACT ----------
+# CONTACT
 elif page == "Contact Us":
     st.title("Contact Us")
 
@@ -236,7 +244,7 @@ elif page == "Contact Us":
                 st.error("Fill required fields.")
 
 
-# ---------- ADMIN PANEL ----------
+# ADMIN PANEL
 elif page == "Admin Panel":
     if admin_password == "YOUR_SECRET_PASSWORD":
         st.title("Admin Dashboard")
