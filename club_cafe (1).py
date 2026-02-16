@@ -78,6 +78,10 @@ page = st.sidebar.radio(
      "About Us", "Location & Timings", "Reviews",
      "Contact Us", "Admin Panel"]
 )
+admin_password = st.sidebar.text_input(
+    "Admin Password",
+    type="password"
+)
 
 
 # ---------- HOME PAGE ----------
@@ -233,13 +237,10 @@ elif page == "Contact Us":
 
 
 # ---------- ADMIN PANEL ----------
-admin_password = st.sidebar.text_input(
-    "Admin Password",
-    type="password"
-)
 elif page == "Admin Panel":
     if admin_password == "YOUR_SECRET_PASSWORD":
         st.title("Admin Dashboard")
+
         conn = sqlite3.connect('cafe_database.db')
 
         st.subheader("Orders")
@@ -249,5 +250,6 @@ elif page == "Admin Panel":
         st.dataframe(pd.read_sql_query("SELECT * FROM messages", conn))
 
         conn.close()
+
     else:
         st.error("Access denied")
