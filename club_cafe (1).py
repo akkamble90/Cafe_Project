@@ -4,12 +4,6 @@ import pandas as pd
 import hashlib
 from datetime import datetime
 
-import streamlit as st
-import sqlite3
-import pandas as pd
-import hashlib
-from datetime import datetime
-
 
 # ================= DATABASE SETUP =================
 def init_db():
@@ -129,9 +123,13 @@ page = st.sidebar.radio(
     ["Login", "Signup", "Order Food", "My Orders", "Contact", "Admin Panel"]
 )
 
+# SESSION DEFAULT PAGE
+if "auth_page" not in st.session_state:
+    st.session_state.auth_page = "login"
 
-# ================= LOGIN =================
-if page == "Login":
+
+# ===== LOGIN PAGE =====
+if st.session_state.auth_page == "login":
 
     st.title("User Login")
 
@@ -145,20 +143,34 @@ if page == "Login":
         else:
             st.error("Invalid credentials")
 
+    st.write("---")
+    st.write("New user?")
 
-# ================= SIGNUP =================
-elif page == "Signup":
+    if st.button("Create Account"):
+        st.session_state.auth_page = "signup"
+        st.rerun()
+
+
+# ===== SIGNUP PAGE =====
+elif st.session_state.auth_page == "signup":
 
     st.title("Create Account")
 
-    username = st.text_input("New Username")
-    password = st.text_input("New Password", type="password")
+    username = st.text_input("Choose Username")
+    password = st.text_input("Choose Password", type="password")
 
     if st.button("Signup"):
         if signup(username, password):
-            st.success("Account created")
+            st.success("Account created — Please login")
+            st.session_state.auth_page = "login"
+            st.rerun()
         else:
             st.error("Username already exists")
+
+    if st.button("Back to Login"):
+        st.session_state.auth_page = "login"
+        st.rerun()
+
 
 
 # ================= ORDER FOOD =================
@@ -273,7 +285,15 @@ st.markdown("""
 
 
 # SIDEBAR
+admin_pass = st.sidebar.text_input(
+    "Admin Access",
+    type="password"
+)
+
 st.sidebar.title(" Club Cafe")
+if st.sidebar.button("Logout"):
+    st.session_state.user = None
+
 page = st.sidebar.radio(
     "Navigation",
     ["Home", "Menu", "Online Ordering", "Gallery",
